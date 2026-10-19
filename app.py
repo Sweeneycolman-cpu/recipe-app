@@ -48,7 +48,20 @@ except Exception as error:
     st.caption('Connection diagnostic: ' + connection_diagnostic(error))
     if st.button('Try again'): st.rerun()
     st.stop()
-page = st.radio('Go to', ['Find a meal', 'Add a meal', 'My recipe book'], horizontal=True, label_visibility='collapsed')
+def change_page():
+    selected = st.session_state.navigation
+    previous = st.session_state.get('last_navigation', 'Find a meal')
+    if selected is None:
+        st.session_state.navigation = previous
+    elif selected != previous:
+        st.session_state.last_navigation = selected
+        st.session_state.pop('editing', None)
+
+page = st.segmented_control(
+    'Go to', ['Find a meal', 'Add a meal', 'My recipe book'],
+    default='Find a meal', key='navigation', on_change=change_page,
+    label_visibility='collapsed', width='stretch',
+) or 'Find a meal'
 editing = st.session_state.get('editing')
 if editing or page == 'Add a meal':
     st.subheader('Edit meal' if editing else 'Add something delicious')
