@@ -5,7 +5,7 @@ import uuid
 import streamlit as st
 from core import Store, match, normalise, connection_diagnostic
 
-st.set_page_config(page_title='Our Recipe Book', page_icon='🍋', layout='centered', initial_sidebar_state='collapsed')
+st.set_page_config(page_title='Our Recipe Book', page_icon='🍽️', layout='centered', initial_sidebar_state='collapsed')
 st.markdown('''<style>
 .stApp {background:#faf8f2} .block-container {max-width:740px;padding-top:2rem;padding-bottom:3rem}
 h1,h2,h3 {color:#294c3b} .stButton button,.stDownloadButton button {min-height:48px;border-radius:12px}
@@ -23,7 +23,7 @@ if cloud and not password_hash:
     st.error('Please finish setting up the recipe book password before using cloud storage.')
     st.stop()
 if password_hash and not st.session_state.get('unlocked'):
-    st.title('🍋 Our Recipe Book')
+    st.title('🍽️ Our Recipe Book')
     st.write('Your meals, all in one place.')
     with st.form('unlock'):
         password = st.text_input('Password', type='password')
@@ -39,7 +39,7 @@ if not cloud:
     st.info('Preview mode · Recipes save on this computer. Connect cloud storage before publishing.')
 if notice := st.session_state.pop('notice', None):
     st.success(notice)
-st.title('🍋 Our Recipe Book')
+st.title('🍽️ Our Recipe Book')
 st.caption('A little inspiration for what’s for dinner.')
 try:
     recipes = store.all()
