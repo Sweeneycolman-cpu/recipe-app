@@ -4,6 +4,29 @@ import unicodedata
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
+from urllib.error import HTTPError, URLError
+import re
+
+def connection_diagnostic(error):
+    """Return only safe status codes, never URLs, headers or response messages."""
+    if isinstance(error, HTTPError):
+        code = ''
+        try:
+            candidate = json.loads(error.read(16384)).get('code', '')
+            if isinstance(candidate, str) and re.fullmatch(r'[A-Z0-9]{3,16}', candidate):
+                code = ' · ' + candidate
+        except (ValueError, AttributeError, OSError):
+            pass
+        hints = {401: 'Supabase rejected the credentials.',
+                 403: 'Supabase denied access to the recipe table.',
+                 404: 'The recipe endpoint or table was not found.',
+                 503: 'Supabase is temporarily unavailable.'}
+        return f'HTTP {error.code}{code}. ' + hints.get(error.code, 'Supabase could not complete the request.')
+    if isinstance(error, (URLError, TimeoutError)):
+        return 'Network connection failed. The app could not reach Supabase.'
+    if isinstance(error, ValueError):
+        return 'The connection URL or database response has an unexpected format.'
+    return 'Unexpected connection error. Check the deployed app configuration.'
 
 ALIASES = {'tomatoes': 'tomato', 'potatoes': 'potato', 'onions': 'onion', 'peppers': 'pepper', 'carrots': 'carrot', 'eggs': 'egg', 'chickpeas': 'chickpea', 'mushrooms': 'mushroom', 'courgettes': 'courgette', 'zucchini': 'courgette', 'bell pepper': 'pepper', 'bell peppers': 'pepper'}
 

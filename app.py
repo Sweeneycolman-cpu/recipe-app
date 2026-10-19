@@ -3,7 +3,7 @@ import hmac
 import json
 import uuid
 import streamlit as st
-from core import Store, match, normalise
+from core import Store, match, normalise, connection_diagnostic
 
 st.set_page_config(page_title='Our Recipe Book', page_icon='🍋', layout='centered', initial_sidebar_state='collapsed')
 st.markdown('''<style>
@@ -43,8 +43,9 @@ st.title('🍋 Our Recipe Book')
 st.caption('A little inspiration for what’s for dinner.')
 try:
     recipes = store.all()
-except Exception:
+except Exception as error:
     st.error('We couldn’t open your recipes. Please check your connection and try again.')
+    st.caption('Connection diagnostic: ' + connection_diagnostic(error))
     if st.button('Try again'): st.rerun()
     st.stop()
 page = st.radio('Go to', ['Find a meal', 'Add a meal', 'My recipe book'], horizontal=True, label_visibility='collapsed')
